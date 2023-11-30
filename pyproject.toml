@@ -1,0 +1,67 @@
+[tool.poetry]
+name = "langchain-monorepo"
+version = "0.0.1"
+description = "LangChain mono-repo"
+authors = []
+license = "MIT"
+readme = "README.md"
+
+
+[tool.poetry.dependencies]
+python = ">=3.9,<4.0"
+#python = ">=3.8.1,<4.0"
+jsonpatch = "^1.33"
+python-dotenv = "^1.0.0"
+openai = "^0.28.0"
+chromadb = "^0.4.12"
+tiktoken = "^0.5.1"
+huggingface-hub = "^0.17.2"
+pypdf2 = "^3.0.1"
+google-search-results = "^2.4.2"
+cohere = "^4.27"
+wikipedia = "^1.4.0"
+networkx = "^3.1"
+matplotlib = "^3.8.0"
+faiss-cpu = "^1.7.4"
+duckduckgo-search = "^3.8.5"
+instructorembedding = "^1.0.1"
+torch = "^2.0.1"
+sentence-transformers = "^2.2.2"
+pypdf = "^3.16.1"
+yfinance = "0.2.28"
+accelerate = "^0.23.0"
+bitsandbytes = "^0.41.1"
+openpyxl = "^3.1.2"
+einops = "^0.6.1"
+langchain = "^0.0.343"
+packaging = "^23.2"
+
+[tool.poetry.group.docs.dependencies]
+autodoc_pydantic = "^1.8.0"
+myst_parser = "^0.18.1"
+nbsphinx = "^0.8.9"
+sphinx = "^4.5.0"
+sphinx-autobuild = "^2021.3.14"
+sphinx_book_theme = "^0.3.3"
+sphinx_rtd_theme = "^1.0.0"
+sphinx-typlog-theme = "^0.8.0"
+sphinx-panels = "^0.6.0"
+toml = "^0.10.2"
+myst-nb = "^0.17.1"
+linkchecker = "^10.2.1"
+sphinx-copybutton = "^0.5.1"
+nbdoc = "^0.0.82"
+
+
+[tool.poetry.group.codespell.dependencies]
+codespell = "^2.2.0"
+
+
+[tool.codespell]
+skip = '.git,*.pdf,*.svg,*.pdf,*.yaml,*.ipynb,poetry.lock,*.min.js,*.css,package-lock.json,example_data,_dist,examples'
+# Ignore latin etc
+ignore-regex = '.*(Stati Uniti|Tense=Pres).*'
+# whats is a typo but used frequently in queries so kept as is
+# aapply - async apply
+# unsecure - typo but part of API, decided to not bother for now
+ignore-words-list = 'momento,collison,ned,foor,reworkd,parth,whats,aapply,mysogyny,unsecure,damon,crate'
