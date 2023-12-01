@@ -6,6 +6,9 @@ It did not actually take 928 sec so I don't understand.  With flash_attn= True, 
 Each inference cost 34sec on the GPU on class7. Measured with  two calls to time(). 
 The cost to load the 7B model is 45sec. The model is not quantized. 
 
+On my mac: 49 sec to load the model (CPU) and 33 sec for each inference.  (see below)
+So my mac is approx same speed as linux machine? Strange. 
+
 I cannot run Mistral on my mac gpu using llama.cpp (I could not get it to compile). No luck with llama-cpp-python either. Mistral has another issue: it cannot be run without flash attention, which requires CUDA. Zephyr can be run with and without flash attention (there is an argument in from_pretrained(....) that controls that.
 
 I will try to run this same setup on the classroom machines this weekend, hopefully.

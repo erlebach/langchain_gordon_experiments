@@ -6,9 +6,9 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from transformers import GenerationConfig
 from time import time
-#import torch
-#print(torch.cuda.is_available())  # CUDA is available
-#quit()
+import torch
+print(torch.cuda.is_available())  # CUDA is available
+quit()
 
 class HuggingFacePipeline:
     def __init__(self, model, tokenizer):
@@ -17,7 +17,7 @@ class HuggingFacePipeline:
 
     # trust_remote_code=False (mac), True (classroom)
     @classmethod
-    def from_model_id(cls, model_id, task, trust_remote_code=True, model_kwargs=None):
+    def from_model_id(cls, model_id, task, trust_remote_code=False, model_kwargs=None):
         if model_kwargs is None:
             model_kwargs = {}
 
