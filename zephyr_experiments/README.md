@@ -3,11 +3,18 @@ I am running the pretrained version of Zephyr on my CPU on the Mac (not the GPU)
 What is amazing is how close the structure of these sentences are to one another.
 The code took about 102 seconds on my mac!!! Took 928s on class7 (ran it twice with time cmd). 
 It did not actually take 928 sec so I don't understand.  With flash_attn= True, took 945 sec according to bash cmd "time". 
-Each inference cost 34sec on the GPU on class7. Measured with  two calls to time(). 
+Each inference cost 34sec on the CPU on class7. Measured with  two calls to time(). 
 The cost to load the 7B model is 45sec. The model is not quantized. 
 
 On my mac: 49 sec to load the model (CPU) and 33 sec for each inference.  (see below)
 So my mac is approx same speed as linux machine? Strange. 
+
+On an empty classroom machine: class18, 160 sec to load shards, 19 sec for inference (makes more sense) on the CPU. 
+2nd run, same results. torch confirms there is a GPU. HOwever, the model was run on the CPU since the model was
+not transferred to the GPU using to.device('cuda'). nvidia-smi does not work. 
+Error: "(langchain-monorepo-py3.11) ➜  zephyr_experiments git:(main) ✗ nvidia-smi
+Failed to initialize NVML: Driver/library version mismatch
+NVML library version: 545.23"
 
 I cannot run Mistral on my mac gpu using llama.cpp (I could not get it to compile). No luck with llama-cpp-python either. Mistral has another issue: it cannot be run without flash attention, which requires CUDA. Zephyr can be run with and without flash attention (there is an argument in from_pretrained(....) that controls that.
 

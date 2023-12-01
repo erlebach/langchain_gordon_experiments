@@ -8,7 +8,9 @@ from transformers import GenerationConfig
 from time import time
 import torch
 print(torch.cuda.is_available())  # CUDA is available
-quit()
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+#quit()
 
 class HuggingFacePipeline:
     def __init__(self, model, tokenizer):
@@ -17,12 +19,13 @@ class HuggingFacePipeline:
 
     # trust_remote_code=False (mac), True (classroom)
     @classmethod
-    def from_model_id(cls, model_id, task, trust_remote_code=False, model_kwargs=None):
+    def from_model_id(cls, model_id, task, trust_remote_code=True, model_kwargs=None):
         if model_kwargs is None:
             model_kwargs = {}
 
         tokenizer = AutoTokenizer.from_pretrained(model_id)
         model = AutoModelForCausalLM.from_pretrained(model_id, trust_remote_code=trust_remote_code, use_flash_attention_2=False, **model_kwargs)
+        model.to(device)
         return cls(model, tokenizer)
 
     def generate_text(self, prompt, temperature=0.8, **generation_kwargs):
