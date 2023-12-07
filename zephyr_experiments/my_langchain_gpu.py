@@ -1,3 +1,7 @@
+import os
+os.environ['CUBLAS_LOGINFO_DBG'] = '1'
+
+
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chains import LLMChain
@@ -16,7 +20,7 @@ prompt = PromptTemplate(template=template, input_variables=["question"])
 callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
 # ----------------------------------------------------------------------
 
-n_gpu_layers = 40  # Change this value based on your model and your GPU VRAM pool.
+n_gpu_layers = 20  # Change this value based on your model and your GPU VRAM pool.
 n_batch = 128  # Should be between 1 and n_ctx, consider the amount of VRAM in your GPU.
 
 with open("json_arr.gbnf", "r") as file:
@@ -24,10 +28,11 @@ with open("json_arr.gbnf", "r") as file:
     grammar_text = file.read()
 
 grammar = LlamaGrammar.from_string(grammar_text)
+root = "/home/gerlebacher/data/llm_models/"
 
 # Make sure the model path is correct for your system!
 llm = LlamaCpp(
-    model_path="/Users/erlebach/data/llm_models/zephyr-7b-beta.Q4_K_M.gguf",
+    model_path=root+"zephyr-7b-beta.Q4_K_M.gguf",
     #model_path="/Users/erlebach/data/llm_models/samantha-mistral-instruct-7b.Q4_K_M.gguf",
     ##model_path="/Users/erlebach/data/em_german_leo_mistral.Q3_K_M.gguf",
     n_gpu_layers=n_gpu_layers,
@@ -35,8 +40,9 @@ llm = LlamaCpp(
     n_ctx=2048,
     stop=[],
     max_tokens=2048,
+    n_threads=12,
     temperature=0.4,  # also works with 0.0 (0.01 is safer)
-    # f16_kv=True,
+    f16_kv=True,
     n_batch=n_batch,
     callback_manager=callback_manager,
     verbose=False,  
