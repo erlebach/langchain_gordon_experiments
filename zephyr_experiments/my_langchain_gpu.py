@@ -6,11 +6,11 @@ from langchain.prompts import PromptTemplate
 import httpx
 from llama_cpp.llama import Llama, LlamaGrammar
 
-template = """Question: {question}
+#template = """Question: {question}
 
-Answer: Let's work this out in a step by step way to be sure we have the right answer."""
+#Answer: Let's work this out in a step by step way to be sure we have the right answer."""
 
-prompt = PromptTemplate(template=template, input_variables=["question"])
+#prompt = PromptTemplate(template=template, input_variables=["question"])
 
 # Callbacks support token-wise streaming
 callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
@@ -24,17 +24,18 @@ with open("json_arr.gbnf", "r") as file:
     grammar_text = file.read()
 
 grammar = LlamaGrammar.from_string(grammar_text)
+root = "/Users/erlebach/data/llm_models/"
 
 # Make sure the model path is correct for your system!
 llm = LlamaCpp(
-    model_path="/Users/erlebach/data/llm_models/zephyr-7b-beta.Q4_K_M.gguf",
+    model_path=root+"zephyr-7b-beta.Q4_K_M.gguf",
     #model_path="/Users/erlebach/data/llm_models/samantha-mistral-instruct-7b.Q4_K_M.gguf",
     ##model_path="/Users/erlebach/data/em_german_leo_mistral.Q3_K_M.gguf",
     n_gpu_layers=n_gpu_layers,
     # max_tokens=24,  # works
     n_ctx=2048,
     stop=[],
-    max_tokens=2048,
+    max_tokens=1000,
     temperature=0.4,  # also works with 0.0 (0.01 is safer)
     # f16_kv=True,
     n_batch=n_batch,
@@ -67,10 +68,10 @@ What are the all the countries member of NATO, expressed as a json list?
 """
 
 prompt7 = """
-What are the all the countries member of NATO?. Only list the countries and capitals."
+What are the the countries member of NATO and their capitals?. Use json format with keys 'country' and 'capital'. 
 """
 prompt8 = """
-What are the all the countries member of NATO, with keys 'pais' (french) and 'capitale' (french)?"
+What are the countries member of NATO, with keys 'pais' (french) and 'capitale' (french)?"
 """
 
 #prompt6 = """
@@ -85,7 +86,7 @@ What are the all the countries member of NATO, with keys 'pais' (french) and 'ca
 # ----------------------------------------------------------------------
 
 # How does batch work?
-#llm(prompt6)
+#llm(prompt7)
 
 # Constrain the reply from llm to conform to the grammar
 llm(prompt7, grammar=grammar)
