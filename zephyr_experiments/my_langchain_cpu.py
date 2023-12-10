@@ -24,7 +24,7 @@ with open("json.gbnf", "r") as file:
     grammar_text = file.read()
 
 grammar = LlamaGrammar.from_string(grammar_text)
-LLM_MODELS = os.environ('LLM_MODELS')
+LLM_MODELS = os.environ['LLM_MODELS']
 
 # Make sure the model path is correct for your system!
 llm = LlamaCpp(

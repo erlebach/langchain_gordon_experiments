@@ -28,7 +28,7 @@ with open("json_arr.gbnf", "r") as file:
     grammar_text = file.read()
 
 grammar = LlamaGrammar.from_string(grammar_text)
-LLM_MODELS = os.environ('LLM_MODELS')
+LLM_MODELS = os.environ['LLM_MODELS']
 
 # Make sure the model path is correct for your system!
 llm = LlamaCpp(
@@ -94,6 +94,15 @@ What are the countries member of NATO, with keys 'pais' (french) and 'capitale' 
 #llm(prompt7)
 
 # Constrain the reply from llm to conform to the grammar
-llm(prompt7, grammar=grammar)
+prompt8 = messages = [
+    {"role": "system", "content": "You are a friendly chatbot who always responds in the style of a pirate"},
+    {"role": "user", "content": "How many helicopters can a human eat in one sitting?"}
+]
+
+prompt = ""
+for message in messages:
+    prompt += f"{message['role']}: {message['content']}\n"
+
+llm(prompt, grammar=grammar)
 # ----------------------------------------------------------------------
 # ----------------------------------------------------------------------
