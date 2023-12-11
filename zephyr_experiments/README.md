@@ -63,3 +63,11 @@ Some ideas from Perplexity:
             break
     return conversation
 ```
+----------------------------------------------------------------------
+2023-12-11
+More details on the parameters: 
+https://forum.cloudron.io/topic/8872/serge-llama-made-easy-self-hosted-ai-chat/2
+
+Additional parameters to llama.cpp
+ repeat_penalty=1.1, frequency_penalty=0.0, presence_penalty=0.0,
+----------------------------------------------------------------------

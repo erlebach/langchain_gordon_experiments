@@ -1,0 +1,28 @@
+2023-09-23
+I had to add jsonpatch to pyproject.toml.
+
+Install networkx and matplotlib for YT_Langchain_basic_conversation_chatbot_with_memory_demo.ipynb
+
+YT_Chat_your_PDFs_Langchain_Template_for_creating.ipynb requires faiss. However, "poetry add faiss" does not work. I had to install "faiss-cpu" (I am a mac, so I did not try faiss-cpu). 
+
+YT_LangChain_Custom_Tools_&_Agents.ipynb
+Requires DuckDuckGoSearchTool import  (actually it doesn't. It requires a component from langchain)
+
+YT_HF_Instructor_Embeddings_Chroma_DB_Multi_Doc_Retriever_LangChain_Part2.ipynb
+Requires "poetry add InstructorEmbedding"
+InsructorEmbedding requires torch. Why wasn't torch added as a dependency of InstructorEmbedding?
+poetry add sentence_transformers also required. 
+poetry add pypdf (required by PyPDFLoader tool in Langchain)
+
+YT_OpenAI_Functions_+_Finance_checker_with_LangChain.ipynb requires Yahoo
+poetry add "yfinance==0.2.28"   (still has issues downloading stock info). Without the ==, 0.2.29 still got installed. 
+YT_LangChain_Chatbot_Running_Alpaca_in_Colab.ipynb requires the `accelerate` module (allows multithreading, even on CPUs if using torch). The `bitsandbytes` quantization library is also required (also useful for cpu). 
+
+YT_Talk_to_CSV_&_Excel_Files_with_LangChain.ipynb requires `openpyxl`: 
+poetry add openpyxl
+
+YT_WizardLM7B_8Bit_with_LangChain.ipynb
+# Not sure why pip is required if I have poetry. However, I get the error: 
+ImportError: Using `load_in_8bit=True` requires Accelerate: `pip install accelerate` and the latest version of bitsandbytes `pip install -i https://test.pypi.org/simple/ bitsandbytes` or pip install bitsandbytes`
+!pip install -q datasets loralib sentencepiece
+!pip -q install bitsandbytes accelerate

@@ -3,6 +3,9 @@ import requests
 import numpy as np
 import re
 import json
+import jinja2
+import yaml
+from typing import Tuple, Any
 
 api_key = "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"
 
@@ -86,6 +89,7 @@ class MistralMessages(Messages):
 class Conversation:
     def __init__(
         self,
+        instructions,
         subject: str,
         authorA: str,
         authorB: str,
@@ -96,6 +100,7 @@ class Conversation:
         output_format=None,
         grammar=None,
     ):
+        self.instructions = instructions
         self.subject = subject
         self.authorA = authorA
         self.authorB = authorB
@@ -159,7 +164,14 @@ class Conversation:
             raise "ErrorA"
 
         try:
-            reply = reply.replace("\n", "")
+            # print(f"\nBEFORE, reply: --{reply}--\n")
+            if reply[-1] != "}":
+                reply.append("}")
+            # reply = re.sub("\n", " ", reply)
+            # split accordint white space (including newlines)
+            reply = " ".join(reply.split())
+            # print("=====")
+            # print(f"\nAFTER, reply: --{reply}--\n")
             dct = json.loads(reply)  # ERROR! WHY IS THAT?
         except:
             print("ERROR")
@@ -174,23 +186,28 @@ class Conversation:
             print(f">>>> turn # {turn}")
             self.single_turn()
 
-    def single_turn(self):
+    def get_prompt(
+        self,
+        author_speaking,
+        author_replied_to,
+    ):
         prompt = (
-            self.subject
-            + f"\n{self.authorB}: {self.conversation[-1]}\n{self.authorB}: \
-            [INST]]Reply to {self.authorA}.[/INST]"
+            self.instructions
+            + self.subject
+            + f"\n{author_speaking}: {self.conversation[-1]}\n{author_speaking}: \
+            [INST]]Reply to {author_replied_to}.[/INST]"
         )
+        print(f"\nprompt: {prompt}")
+        return prompt
+
+    def single_turn(self):
+        prompt = self.get_prompt(self.authorB, self.authorA)
         content = self.get_reply(prompt)
         reply = f"{self.authorB}: {content}"
         self.conversation.append(reply)
         print(f"\n{reply}")
 
-        prompt = (
-            self.subject
-            + self.output_format
-            + f"\n{self.authorA}: {self.conversation[-1]}\n{self.authorA}: \
-            [INST]Reply to {self.authorB}.[/INST]"
-        )
+        prompt = self.get_prompt(self.authorA, self.authorB)
         content = self.get_reply(prompt)
         reply = f"{self.authorA}: {content}"
         self.conversation.append(reply)
@@ -219,6 +236,28 @@ class ListIterator:
             return current_element
         else:
             raise StopIteration
+
+
+def apply_templates(filenm: str) -> Tuple[dict[str, Any], dict[str, str]]:
+    """
+    Apply templates to the given file.
+
+    Args:
+        filenm (str): The path to the file containing the templates.
+
+    Returns: tuple
+        dict: yaml representation of the file as a dictionary
+        dict: A dictionary containing the rendered texts for each template key
+    """
+    env = jinja2.Environment()
+    with open(filenm, "r") as f:
+        data = yaml.safe_load(f)
+
+    rendered_texts = {}
+    for key, template_text in data["conversation"].items():
+        template = env.from_string(template_text)
+        rendered_texts[key] = template.render(data)
+    return data, rendered_texts
 
 
 # ----------------------------------------------------------------------
