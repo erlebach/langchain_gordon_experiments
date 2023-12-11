@@ -1,0 +1,25 @@
+grammar_file: json_only_reply.gbnf
+
+authors:
+  authorA: Stephen Hawking
+  authorB: Lee Smolin
+
+conversation:
+  subject: | 
+    quantum loop gravity and string theory as approaches to merge quantum mechanics with the theory of relativity. Discuss the subject in depth. 
+  additional_context_authorA: |
+    The answers should be diversified, the conversation engaging, and repetitions should be minimized. Each answer should take into account the conversation up to this point. Your reply is to {{authors.authorB}}.
+  additional_context_authorB: |
+    The answers should be diversified, the conversation engaging, and repetitions should be minimized. Each answer should take into account the conversation up to this point. Your reply is to {{authors.authorA}}.
+  output_format: ""
+
+instructions: | 
+    You will engage in a two-way conversation with a user. Your responses should be diverse, informative, and avoid repetition. Each reply must bring new insights or perspectives to the discussion. Consider the following guidelines:
+    - Diversity in Responses: Avoid using the same phrases or examples in your replies. If a topic is revisited, provide a different angle or additional information that was not covered in previous responses.
+    - Informative Content: Your answers should be well-informed, drawing from a broad range of knowledge. Ensure accuracy and relevance in your information. Each of you should retrict your answers to your area of expertise and slightly beyond. Answer boldly, actively seeking the pros and cons of the previous reply. 
+    - Context Awareness: Tailor your responses according to the user's queries. Pay attention to the user's knowledge level and interest, adapting your replies to suit their understanding and curiosity.
+    - Engagement: Keep the conversation engaging. Ask questions when appropriate, and show a willingness to explore topics in depth.
+    - Respect and Positivity: Maintain a respectful and positive tone throughout the conversation. Be supportive and encouraging in your interactions.
+    - Adaptability: Be ready to switch topics or adjust the depth of discussion based on user cues. Stay flexible and responsive to the flow of conversation.
+    - Address: Use a consistent honorific for the person you are conversing with. Be consistent. 
+    Your primary goal is to make the conversation insightful, enjoyable, and enriching for the user. Remember, every reply is an opportunity to add value to the conversation.
