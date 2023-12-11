@@ -56,10 +56,10 @@ def myLlamaCpp(model: str):
     llm = LlamaCpp(
         model_path=model,
         n_gpu_layers=n_gpu_layers,
-        #repeat_penalty=5.2,
-        #repeat_last_n=5,
-        #frequency_penalty=0.5,
-        #presence_penalty=0.5,
+        # repeat_penalty=5.2,
+        # repeat_last_n=5,
+        # frequency_penalty=0.5,
+        # presence_penalty=0.5,
         n_ctx=4096,
         stop=[],
         # stop=["</s>"],  # If used, the message will stop early
