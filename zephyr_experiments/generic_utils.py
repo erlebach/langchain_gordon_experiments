@@ -39,15 +39,9 @@ def run_model(model, url, payload):
 def create_payload(model, messages, temperature):
     payload = {
         "model": model,
-        # "prompt": "How many stars are there in the Milky-Way?",  # Required for text
         "max_tokens": 200,
         "messages": messages,  # Required for chat
         "temperature": temperature,
-        # "top_p": 1,
-        # "top_k": 10,
-        # "stream": False,
-        # "presence_penalty": 0.0,
-        # "frequency_penalty": 0.1
     }
     return payload
 
@@ -63,15 +57,16 @@ class Messages:
     def __call__(self):
         return self.messages
 
-    def print(self):  # , role):
-        # print(f"{role}:")
+    def print(self):
         for d in self.messages:
             print(f"{d['role']}: {d['content']}")
 
 
 class MistralMessages(Messages):
-    def __init__(self):
+    def __init__(self, subject, additional_context):
         super().__init__()
+        self.additional_context = additional_context
+        self.subject = subject
 
     def add(self, role, content):
         strg_dict = dict(role=role + ":", content=f"{content}")
@@ -88,33 +83,20 @@ class MistralMessages(Messages):
         return all_content.strip()  # remove leading and trailing spaces
 
 
-# # Not clear this class does anything
-# class MistralGeneric(Messages):
-#     def __init__(self):
-#         super().__init__()
-
-#     def add(self, role, content):
-#         strg_dict = dict(role=role + ":", content=f"[INST]{content}[/INST]")
-#         self.messages.append(strg_dict)
-
-#     def add_instruction(self, role, content):
-#         strg_dict = dict(role="", content=f"<s>[INST]{content}[/INST]</s>")
-#         self.messages.append(strg_dict)
-
-#     def full_context(self):
-#         # Inefficient to reconstruct the full context each time.
-#         # More efficient to add new messages to the context, which is a list.
-#         # self.messages: is a list of dictionaries
-#         all_content = ""
-#         for msg in self.messages:
-#             # The colon between role and content is included in the dictionary
-#             # Why? Because the instruction has no role. The structure is different.
-#             all_content += f"\n{msg['role']} {msg['content']}"
-#         return all_content
-
-
 class Conversation:
-    def __init__(self, authorA, authorB, llmA, llmB, msgsA, msgsB, grammar=None):
+    def __init__(
+        self,
+        subject: str,
+        authorA: str,
+        authorB: str,
+        llmA,
+        llmB,
+        msgsA: Messages,
+        msgsB: Messages,
+        output_format=None,
+        grammar=None,
+    ):
+        self.subject = subject
         self.authorA = authorA
         self.authorB = authorB
         self.llmA = llmA
@@ -122,18 +104,31 @@ class Conversation:
         self.msgsA = msgsA
         self.msgsB = msgsB
         self.grammar = grammar
+        self.output_format = output_format
 
         # messages beyond context
         self.stringA = ""
         self.stringB = ""
+
+        # Replies by model
+        self.conversation: list[dict] = []
+
+        self.initiate_conversation()
+
+    def initiate_conversation(self):
+        """
+        Initiate the conversation with a question.
+        """
+        self.conversation.append("")
+        self.conversation.append(
+            f"{self.authorA}: Hello {self.authorB}! Let us have a discussion on {self.subject}. Get the ball rolling!"
+        )
 
     def update_strings(self, dct):
         msg = dct["Interlocutor"] + ": " + dct["Reply"]
         # print("msg: ", msg)
         self.stringA += "\n" + msg
         self.stringB += "\n" + msg
-        # print("self.stringA: ", self.stringA)
-        # print("self.stringB: ", self.stringB)
 
     def update_msgs(self, author, msg):
         """
@@ -141,8 +136,37 @@ class Conversation:
         """
         self.msgsA.add(author, msg)
         self.msgsB.add(author, msg)
-        # self.msgsA.add(f"{self.authorA}", msg_authorA)
-        # self.msgsB.add(f"{self.authorA}", msg_authorA)
+
+    def get_reply(self, prompt):
+        prompt = re.sub(" {2,}", "", prompt)
+
+        """
+        try:
+            print(f"\n==> conversation[-2]: {self.conversation[-2]}\n...")
+        except:
+            pass
+
+        try:
+            print(f"\n==> conversation[-1]: {self.conversation[-1]}\n...")
+        except:
+            pass
+        """
+
+        if self.grammar is not None:
+            reply = self.llmA(prompt)
+        else:
+            reply = self.llmA(prompt)
+            raise "ErrorA"
+
+        try:
+            reply = reply.replace("\n", "")
+            dct = json.loads(reply)  # ERROR! WHY IS THAT?
+        except:
+            print("ERROR")
+
+        # self.update_strings(dct)
+        content = dct["Reply"]
+        return content
 
     def multi_turn(self, nb_turns):
         for turn in range(nb_turns):
@@ -151,68 +175,26 @@ class Conversation:
             self.single_turn()
 
     def single_turn(self):
-        # Add both conversations in the same buffer. This assumes that both speakers
-        # have perfect memory. Ultimately, that is not the case. I should create a different
-        # memory buffer for each speaker with different properties. For example, 5 speakers
-        # could be in a conversation, but only conversations within a certain range can be
-        # heard by a given person. If the people were Borg, each Borg would hear everything.
+        prompt = (
+            self.subject
+            + f"\n{self.authorB}: {self.conversation[-1]}\n{self.authorB}: \
+            [INST]]Reply to {self.authorA}.[/INST]"
+        )
+        content = self.get_reply(prompt)
+        reply = f"{self.authorB}: {content}"
+        self.conversation.append(reply)
+        print(f"\n{reply}")
 
-        # Set up reply by authorA
-        contextA = self.msgsA.full_context()
-        print("==> contextA: ", contextA)
-        print("==> self.stringA= ", self.stringA)
-
-        # print("\n==> before first question, msgsA: ", self.msgsA())
-        if self.grammar is not None:
-            msg_authorA = self.llmA(
-                contextA + self.stringA, grammar=self.grammar
-            )  # the argument must be a string for Mistral
-        else:
-            msg_authorA = self.llmA(contextA)
-            raise "ERROR"
-
-        print("\n==> AuthorA reply: ", msg_authorA)  # Empty string!!! WHY?
-
-        # Process json string
-        dct = json.loads(msg_authorA)[0]
-        self.update_strings(dct)
-
-        # Why does self.llmA return no answer?
-        # msg_authorA = self.llmA("do you like flying into space?")
-        # self.update_msgs(self.authorA, msg_authorA)
-
-        contextB = self.msgsB.full_context()
-        print("==> contextB: ", contextB)
-        print("==> self.stringB= ", self.stringB)
-
-        # Set up reply by authorB
-        # contextB = self.msgsB.full_context()
-        if self.grammar is not None:
-            print(f"\n{contextB+self.stringB=}")
-            msg_authorB = self.llmB(
-                contextB + self.stringB, grammar=self.grammar
-            )  # the argument must be a string for Mistral
-        else:
-            msg_authorB = self.llmB(contextB)
-            raise "error"
-
-        if msg_authorB == "":
-            print("error: msg_authorB is empty string")
-            raise "error"
-
-        # print("contextB: ", contextB)  # should contain the first reply
-        print(f"\n==> AuthorB reply: {msg_authorB=}")
-
-        dct = json.loads(msg_authorB)[0]
-        # print(dct["Interlocutor"] + ": ", dct["Reply"])
-        self.update_strings(dct)
-
-        # message as a string
-        # msg = dct["Interlocutor"] + ": ", dct["Reply"]
-        # mgsA.add("User", msg)
-
-        print("\n\n\n======================\n\n\n")
-        # raise "error"
+        prompt = (
+            self.subject
+            + self.output_format
+            + f"\n{self.authorA}: {self.conversation[-1]}\n{self.authorA}: \
+            [INST]Reply to {self.authorB}.[/INST]"
+        )
+        content = self.get_reply(prompt)
+        reply = f"{self.authorA}: {content}"
+        self.conversation.append(reply)
+        print(f"\n{reply}")
 
     def print_both_contexts(self):
         print(f"\n\n====> print msgsA, {self.authorA}'s context")

@@ -34,9 +34,11 @@ LLM_MODELS = os.environ["LLM_MODELS"]
 
 # with open("json.gbnf", "r") as file:
 # with open("json_arr.gbnf", "r") as file:
-with open("json_converse.gbnf", "r") as file:
+# with open("json_converse.gbnf", "r") as file:
+with open("json_only_reply.gbnf", "r") as file:
     grammar_text = file.read()
 grammar = LlamaGrammar.from_string(grammar_text)
+print("grammar_text: ", grammar_text)
 
 
 # Make sure the model path is correct for your system!
@@ -58,11 +60,12 @@ def myLlamaCpp(model: str):
         # stop=["</s>"],  # If used, the message will stop early
         max_tokens=1000,
         n_threads=8,
-        temperature=0.8,  # also works with 0.0 (0.01 is safer)
+        temperature=2.0,  # also works with 0.0 (0.01 is safer)
         f16_kv=True,
         n_batch=n_batch,
         callback_manager=callback_manager,
         verbose=False,
+        grammar_path="json_only_reply.gbnf",
     )
     return llm
 
@@ -73,11 +76,25 @@ modelB = LLM_MODELS + "mistral-7b-instruct-v0.1.Q3_K_M.gguf"
 llmA = myLlamaCpp(modelA)
 llmB = myLlamaCpp(modelB)
 
+# AuthorA will start the conversation
 authorA = "Stephen Hawking"
 authorB = "Lee Smolin"
 
-subject = """The topic of discussion is quantum loop gravity and string theory as approaches to 
-          merge quantum mechanics with the theory of relativity"""
+subject = """quantum loop gravity and string theory as approaches to  \
+          merge quantum mechanics with the theory of relativity. Replies should be in JSON format  \
+          with the keys 'Interlocutor' and 'Reply', more specifically: {"Interlocutor": author, "Reply": xxx}, where `author` is the author replying, and `xxx` is a string with th reply. """
+subject = """quantum loop gravity and string theory as approaches to  \
+          merge quantum mechanics with the theory of relativity. Discuss the subject in depth. """
+subject = re.sub(" {2,}", "", subject)
+
+output_format = """Replies should be in JSON format  \
+          with the keys 'Interlocutor' and 'Reply', more specifically: {"Interlocutor": author, "Reply": xxx}, where `author` is the author replying, and `xxx` is a string with th reply. """
+output_format = re.sub(" {2,}", "", output_format)
+
+# Check that grammar_path in llama_cpp/llama.py is correct. If it is,
+# there is no need for additinal format instructions, although they would probably help.
+output_format = ""
+
 
 additional_context_authorA = f"""The answers should be diversified, the conversation engaging, and repetitions should be minimized. Each answer should take into account the conversation up to this point. Your reply to {authorB} is in JSON format: {{"Interlocutor": {authorA}, "Reply": xxx}}, where `xxx` if the reply by {authorB}"""
 
@@ -87,19 +104,26 @@ promptA = f"""You are {authorA}. {subject}. {additional_context_authorA}. You'll
 
 promptB = f"""You are {authorB}. {subject}. {additional_context_authorB}. You'll be answering comments by {authorA}. """
 
+# promptAA = "[INST]What would {authorA} say in response to {authorB}?[/INST]"
+# promptBB = "[INST]What would {authorB} say in response to {authorA}?[/INST]"
+
 # Remove 2 or more consecutive spaces.
 promptA = re.sub(" {2,}", "", promptA)
 promptB = re.sub(" {2,}", "", promptB)
+# promptAA = re.sub(" {2,}", "", promptAA)
+# promptBB = re.sub(" {2,}", "", promptBB)
 
-msgsA = u.MistralMessages()
-msgsB = u.MistralMessages()
+msgsA = u.MistralMessages(subject, additional_context_authorA)
+msgsB = u.MistralMessages(subject, additional_context_authorB)
 
 msgsA.add_instruction("system", promptA)
 msgsB.add_instruction("system", promptB)
 msgsA.add(authorA, "")
 
 
-conversation = u.Conversation(authorA, authorB, llmA, llmB, msgsA, msgsB, grammar)
+conversation = u.Conversation(
+    subject, authorA, authorB, llmA, llmB, msgsA, msgsB, output_format, grammar
+)
 # conversation.print_both_contexts()
-conversation.multi_turn(3)
+conversation.multi_turn(10)
 quit()

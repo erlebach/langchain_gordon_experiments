@@ -38,3 +38,28 @@ I’m not talking about the kind of happiness that comes from a good day, a prom
 # Mistral
 
 # Phi1.5
+----------------------------------------------------------------------
+2023-12-10
+Some ideas from Perplexity: 
+- Use only a single context, called conversation. 
+- Inject instructions at the end of the the conversations to increase the likelihood
+  of the LLM replying correctly. 
+``` python
+  def converse(model1, model2, start_prompt):
+    conversation = [start_prompt]
+    while True:
+        # Model 1 generates a response based on the conversation so far
+        prompt1 = f"AuthorA: {conversation[-1]}\nAuthorB: [INST]What would AuthorA say in response to AuthorB?[/INST]"
+        response1 = model1.generate_response(prompt1)
+        conversation.append(response1)
+        
+        # Model 2 generates a response based on the conversation so far
+        prompt2 = f"AuthorA: {response1}\nAuthorB: [INST]What would AuthorB say in response to AuthorA?[/INST]"
+        response2 = model2.generate_response(prompt2)
+        conversation.append(response2)
+        
+        # You can add a condition to break the loop if the conversation reaches a certain length
+        if len(conversation) > 10:
+            break
+    return conversation
+```
