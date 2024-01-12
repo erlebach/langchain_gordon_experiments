@@ -25,10 +25,12 @@ n_batch = 128  # Should be between 1 and n_ctx, consider the amount of VRAM in y
 
 LLM_MODELS = os.environ["LLM_MODELS"]
 
-modelA = LLM_MODELS + "zephyr-7b-beta.Q4_K_M.gguf"   # works
+#modelA = LLM_MODELS + "zephyr-7b-beta.Q4_K_M.gguf"   # works
 #modelA = LLM_MODELS + "mistral-7b-instruct-v0.1.Q3_K_M.gguf"   # missing model
 #modelA = LLM_MODELS + "codeninja-1.0-openchat-7b.Q4_K_M.gguf"  # works
-modelB = LLM_MODELS+"samantha-mistral-instruct-7b.Q4_K_M.gguf"  # works
+modelA = LLM_MODELS+"mixtral-fusion-4x7b-instruct-v0.1.Q4_K_M.gguf"
+#modelB = LLM_MODELS+"samantha-mistral-instruct-7b.Q4_K_M.gguf"  # works
+modelB = LLM_MODELS+"mixtral-fusion-4x7b-instruct-v0.1.Q4_K_M.gguf"
 #modelB = LLM_MODELS + "mistral-7b-instruct-v0.1.Q3_K_M.gguf"   # missing model
 #modelB = LLM_MODELS + "codeninja-1.0-openchat-7b.Q4_K_M.gguf"  # works
 
