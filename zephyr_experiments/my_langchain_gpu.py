@@ -32,9 +32,9 @@ LLM_MODELS = os.environ['LLM_MODELS']
 
 # Make sure the model path is correct for your system!
 llm = LlamaCpp(
-    model_path=LLM_MODELS+"zephyr-7b-beta.Q4_K_M.gguf",
-    #model_path="/Users/erlebach/data/llm_models/samantha-mistral-instruct-7b.Q4_K_M.gguf",
-    ##model_path="/Users/erlebach/data/em_german_leo_mistral.Q3_K_M.gguf",
+    #model_path=LLM_MODELS+"zephyr-7b-beta.Q4_K_M.gguf",  # works
+    #model_path=LLM_MODELS+"codeninja-1.0-openchat-7b.Q4_K_M.gguf",  # works
+    #model_path="/Users/erlebach/data/llm_models/samantha-mistral-instruct-7b.Q4_K_M.gguf",  # works
     n_gpu_layers=n_gpu_layers,
     # max_tokens=24,  # works
     n_ctx=2048,
@@ -99,10 +99,14 @@ prompt8 = messages = [
     {"role": "user", "content": "How many helicopters can a human eat in one sitting?"}
 ]
 
+print("prompt: ", prompt8)
+llm(prompt8, grammar=grammar)
+
 prompt = ""
 for message in messages:
     prompt += f"{message['role']}: {message['content']}\n"
 
+print("prompt: ", prompt)
 llm(prompt, grammar=grammar)
 # ----------------------------------------------------------------------
 # ----------------------------------------------------------------------
