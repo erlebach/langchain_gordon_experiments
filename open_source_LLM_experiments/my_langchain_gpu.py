@@ -33,8 +33,8 @@ LLM_MODELS = os.environ['LLM_MODELS']
 # Make sure the model path is correct for your system!
 llm = LlamaCpp(
     #model_path=LLM_MODELS+"zephyr-7b-beta.Q4_K_M.gguf",  # works
-    #model_path=LLM_MODELS+"codeninja-1.0-openchat-7b.Q4_K_M.gguf",  # works
-    model_path=LLM_MODELS+"mixtral-fusion-4x7b-instruct-v0.1.Q4_K_M.gguf",
+    model_path=LLM_MODELS+"codeninja-1.0-openchat-7b.Q4_K_M.gguf",  # works
+    #model_path=LLM_MODELS+"mixtral-fusion-4x7b-instruct-v0.1.Q4_K_M.gguf",
     #model_path="/Users/erlebach/data/llm_models/samantha-mistral-instruct-7b.Q4_K_M.gguf",  # works
     n_gpu_layers=n_gpu_layers,
     # max_tokens=24,  # works

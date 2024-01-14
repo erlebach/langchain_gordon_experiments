@@ -36,6 +36,9 @@ einops = "^0.6.1"
 langchain = "^0.0.343"
 packaging = "^23.2"
 requests = "^2.31.0"
+gpt4all = "^2.1.0"
+typer = "^0.9.0"
+flask = "^3.0.0"
 
 [tool.poetry.group.docs.dependencies]
 autodoc_pydantic = "^1.8.0"
