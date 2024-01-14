@@ -71,3 +71,4 @@ Word: 'point'
 Word: 'it'
 Word: 'collapses'  # Was 3 tokens
 Word: 'into'
+"""
