@@ -21,6 +21,7 @@ models = [
 ]
 
 model_folder = Path.home() / "data/llm_models"
+print(model_folder)
 
 # Even with `allow_download=True`, the model model is not downloaded if in the stated location.
 

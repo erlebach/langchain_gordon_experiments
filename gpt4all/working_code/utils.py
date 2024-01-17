@@ -12,6 +12,7 @@ models = [
 ]
 
 def run_models(prompts):
+    exit()
     for model in models:
         llm = GPT4All(model, model_path=model_folder, allow_download=True)
         print(f"==========> {model=}") 
@@ -30,6 +31,8 @@ def run_models(prompts):
 
 #----------------------------------------------------------------------
 def get_llm(model_id):
+    print(f"{models[model_id]=}")
+    print(f"{model_folder=}")
     return GPT4All(models[model_id], model_path=model_folder, allow_download=False)
 #----------------------------------------------------------------------
 

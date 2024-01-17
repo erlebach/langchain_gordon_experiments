@@ -1,7 +1,11 @@
 from flask import Flask, request, jsonify
+import redis  # database that serves as cache
 from gpt4all import GPT4All
 
 app = Flask(__name__)
+
+# redis runs on the same machine as the server
+cache = redis.Redis(host='redis', port=6379)
 
 # Specify the path to the model folder
 model_path = '/Users/erlebach/data/llm_models/'
@@ -15,15 +19,13 @@ def predict():
     # Get data from request
     data = request.json
     prompt = data.get('prompt', '')
-    print("prompt= ", prompt)
     
     # Perform prediction using GPT4All
     response = gpt_instance.generate(prompt=prompt)
-    print("server response= ", response)
     
     # Return the prediction as a JSON response
     return jsonify(response)
 
 if __name__ == '__main__':
-    #app.run(debug=True, host='0.0.0.0', port=4891)
-    app.run(debug=True, host='127.0.0.1', port=4892)
+    app.run(debug=True, host='0.0.0.0', port=4891)
+    #app.run(debug=True, host='127.0.0.1', port=4892)

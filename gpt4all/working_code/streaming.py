@@ -11,6 +11,17 @@ Next, a more complex case.
 """
 from gpt4all import GPT4All
 import utils as u
+import time
+
+def timing_val(func):
+    def wrapper(*arg, **kw):
+        '''source: http://www.daniweb.com/code/snippet368.html'''
+        t1 = time.time()
+        res = func(*arg, **kw)
+        t2 = time.time()
+        print(f"Time: {t2 - t1}, func.__name__")
+        return (t2 - t1), res, func.__name__
+    return wrapper
 
 
 # Even with `allow_download=True`, the model model is not downloaded if in the stated location.
@@ -38,12 +49,20 @@ print()
 llm = u.get_llm(model_id=0)
 reply = llm.generate(prompts[0], streaming=False, max_tokens=50, temp=0.01)
 print("reply: ", reply)
-reply = llm.generate(prompts[0], streaming=True, max_tokens=50, temp=0.01)
-print(f"reply: {reply}")
+
+@timing_val
+def time_prompt(prompt):
+    return llm.generate(prompt, streaming=False, max_tokens=50, temp=0.01)
+
+prompts = ["tell me about ballet dancing", "tell me about macrame", "tell me about mathematics"]
+for prompt in prompts:
+    time_prompt(prompt)
+    print("prompt= ", prompt)
+    print("reply= ", reply)
 
 # Notice that the tokens are not words in general. 
-for token in reply:
-    print(f"Token: '{token}'")
+#for token in reply:
+#    print(f"Token: '{token}'")
 
 """
 For example
