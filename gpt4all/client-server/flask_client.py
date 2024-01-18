@@ -12,11 +12,20 @@ data = {
     'prompt': prompt
 }
 
-# Send the POST request to the server
-response = requests.post(server_url, json=data)
+while True:
+    # Send the POST request to the server
+    response = requests.post(server_url, json=data)
 
-# Check if the request was successful
-if response.status_code == 200:
-    print("Server response:", response.json())
-else:
-    print("Failed to get response from server, status code:", response.status_code)
+    # Check if the request was successful
+    if response.status_code == 200:
+        print("Server response:", response.json())
+        file_path = '/app/llm_models/response_json'
+        # Write the JSON data to the file
+        with open(file_path, 'w') as outfile:
+            json.dump(response.json(), outfile, indent=4)
+    else:
+        print("Failed to get response from server, status code:", response.status_code)
+        file_path = '/app/llm_models/response_json'
+        # Write the JSON data to the file
+        with open(file_path, 'w') as outfile:
+            print("Failed to get response from server, status code:", response.status_code, file=outfile)

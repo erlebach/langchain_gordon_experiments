@@ -1,0 +1,45 @@
+version: "3.5"
+services:
+  flask_server:
+    build: 
+      context: .
+      dockerfile: Dockerfile_server
+    image: flask_server:latest
+    working_dir: /app
+    ports:
+      - target: 5002
+        published: 5002
+    networks:
+      - app-network
+    volumes:
+      - type: bind
+        source: /home/gerlebacher/data/llm_models/
+        target: /app/llm_models
+    depends_on: 
+      - redis
+
+  flask_client:
+    build: 
+      context: .
+      dockerfile: Dockerfile_client
+    image: flask_client:latest
+    working_dir: /app
+    networks:
+      - app-network
+    volumes:
+      - type: bind
+        source: /home/gerlebacher/data/llm_models/
+        target: /app/llm_models
+    depends_on:
+      - flask_server
+
+  redis:
+    image: "redis:alpine"
+    networks:
+      - app-network
+    ports:
+      - "6379:6379"
+
+networks:
+  app-network:
+
